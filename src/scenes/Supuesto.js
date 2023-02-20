@@ -84,7 +84,7 @@ export default class EscenaSupuesto extends Phaser.Scene
     create()
     {
         console.log(this.supuesto); 
-        // Imagen del Supuestow
+        // Imagen del Supuesto
         var image = this.add.image(0, 0, 'escenario').setOrigin(0);
         this.add.image(1570, 540, "victimInterface").setOrigin(0,0.5);
         if(this.basics.getBreathe()){
