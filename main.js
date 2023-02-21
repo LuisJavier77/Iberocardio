@@ -1,6 +1,6 @@
 import './style.css'
 
-import Phaser from "/phaser"
+import Phaser from "/Iberocardio/phaser"
 import TitleScreen from './src/scenes/TitleScreen'
 import cardGame from './src/scenes/cardGame'
 import DealCards from './src/scenes/DealCards'
