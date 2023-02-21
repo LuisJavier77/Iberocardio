@@ -25,5 +25,4 @@ git commit -m 'deploy'
 
 # si estás desplegando en https://<NOMBRE DE USUARIO>.github.io/<REPO>
 git push -f git@github.com:luisjavier77/Iberocardio.git main:gh-pages
-
 cd -
