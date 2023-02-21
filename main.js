@@ -2,7 +2,7 @@ import './style.css'
 
 import Phaser from "/phaser"
 import TitleScreen from './src/scenes/TitleScreen'
-import cardGame from './src/scenes/cardGame'
+import cardGame from './src/scenes/cardGame.js'
 import DealCards from './src/scenes/DealCards'
 import Scenes from './src/scenes/Scenes'
 import CallGame from './src/scenes/CallGame'
