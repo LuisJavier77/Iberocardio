@@ -1,4 +1,4 @@
-import Phaser from 'phaser'
+import Phaser from '/phaser'
 import LocalInfo from "../helpers/localInfo";
 import Supuesto from "../helpers/supuestos";
 import Basics from "../helpers/basics";

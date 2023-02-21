@@ -1,4 +1,4 @@
-import Phaser from 'phaser'
+import Phaser from '/phaser'
 import Supuesto from "../helpers/supuestos";
 
 import { EscenaSupuesto, LateralPosition, RCP, EndGame } from '../consts/SceneKeys'

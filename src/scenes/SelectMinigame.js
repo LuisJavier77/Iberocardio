@@ -1,4 +1,4 @@
-import Phaser from 'phaser'
+import Phaser from '/phaser'
 
 import { Choking } from '../consts/SceneKeys'
 import { LateralPosition } from '../consts/SceneKeys'

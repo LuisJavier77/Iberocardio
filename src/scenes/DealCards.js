@@ -1,4 +1,4 @@
-import Phaser from 'phaser';
+import Phaser from '/phaser';
 
 import { cardGame, Scenes, EscenaSupuesto } from '../consts/SceneKeys';
 
