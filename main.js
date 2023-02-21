@@ -13,7 +13,7 @@ import RCP from './src/scenes/rcp'
 import DEA from './src/scenes/dea'
 import EndGame from './src/scenes/EndGame'
 import EscenaSupuesto from './src/scenes/Supuesto'
-import InputTextPlugin from 'phaser3-rex-plugins/plugins/inputtext-plugin.js';
+import InputTextPlugin from '/phaser3-rex-plugins/plugins/inputtext-plugin.js';
 
 import * as SceneKeys from './src/consts/SceneKeys'
 
