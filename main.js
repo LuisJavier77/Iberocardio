@@ -1,6 +1,6 @@
 import './style.css'
 
-import Phaser from "/phaser"
+import Phaser from "phaser"
 import TitleScreen from './src/scenes/TitleScreen'
 import cardGame from './src/scenes/cardGame'
 import DealCards from './src/scenes/DealCards'
@@ -13,7 +13,7 @@ import RCP from './src/scenes/rcp'
 import DEA from './src/scenes/dea'
 import EndGame from './src/scenes/EndGame'
 import EscenaSupuesto from './src/scenes/Supuesto'
-import InputTextPlugin from '/phaser3-rex-plugins/plugins/inputtext-plugin.js';
+import InputTextPlugin from 'phaser3-rex-plugins/plugins/inputtext-plugin.js';
 
 import * as SceneKeys from './src/consts/SceneKeys'
 

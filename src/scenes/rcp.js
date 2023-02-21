@@ -1,4 +1,4 @@
-import Phaser from '/phaser'
+import Phaser from 'phaser'
 
 import { DEA } from '../consts/SceneKeys';
 import { EndGame } from '../consts/SceneKeys';
