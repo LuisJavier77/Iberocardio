@@ -29,7 +29,8 @@ export default class Choking extends Phaser.Scene
         var helpButton = this.add.image(1800, 100, 'help').setScale(0.2);
         helpButton.setInteractive({cursor: 'pointer'});
         if(!this.supuestoScene.chokingModalDisplayed){
-            this.showModal();  
+            this.showModal(); 
+             
         }       
 
         this.add.image(960, 500, 'atragantamiento').setOrigin(0.5, 0.5).setScale(1.5);
