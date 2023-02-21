@@ -8,7 +8,7 @@ export default class TitleScreen extends Phaser.Scene
 {
     preload()
     {
-        this.load.image('iberocardio', './assets/images/iberocardio-logo.png');
+        this.load.image('iberocardio', 'src/assets/images/iberocardio-logo.png');
         this.load.image('panoimagen', 'src/assets/images/panoimagen-logo.svg');
         this.load.image('start', 'src/assets/images/start.png');
     }
