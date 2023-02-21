@@ -1,7 +1,7 @@
 import './style.css'
 
-import Phaser from "/Iberocardio/phaser"
-import TitleScreen from './src/scenes/TitleScreen'
+import Phaser from "/phaser"
+import TitleScreen from '../src/scenes/TitleScreen'
 import cardGame from './src/scenes/cardGame'
 import DealCards from './src/scenes/DealCards'
 import Scenes from './src/scenes/Scenes'
