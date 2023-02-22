@@ -2,6 +2,7 @@ import Phaser from 'phaser'
 
 import { EndGame } from '../consts/SceneKeys'
 
+//import IMG1 from "src/assets/images/help.png";
 
 
 export default class LateralPosition extends Phaser.Scene
