@@ -3,14 +3,14 @@ import Phaser from 'phaser'
 import { cardGame, DealCards, EscenaSupuesto } from '../consts/SceneKeys'
 import Supuesto from '../helpers/supuestos';
 
-import imgIberocardio from 'src/assets/images/iberocardio-logo.png';
+//import imgIberocardio from 'src/assets/images/iberocardio-logo.png';
 
 
 export default class TitleScreen extends Phaser.Scene
 {
     preload()
     {
-        this.load.image('iberocardio', imgIberocardio);
+        this.load.image('iberocardio', 'src/assets/images/iberocardio-logo.png');
         this.load.image('panoimagen', 'src/assets/images/panoimagen-logo.svg');
         this.load.image('start', 'src/assets/images/start.png');
     }
