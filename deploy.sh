@@ -23,6 +23,6 @@ git commit -m 'deploy'
 # si estás desplegando en https://<NOMBRE DE USUARIO>.github.io
 # git push -f git@github.com:luisjavier77/luisjavier77.github.io.git main
 
-# si estás desplegando en https://<NOMBRE DE USUARIO>.github.io/<REPO>
+# si estás desplegando en https://<NOMBRE DE USUARIO>/github.io/<REPO>
 git push -f git@github.com:LuisJavier77/Iberocardio.git main:gh-pages
 cd -
