@@ -5,12 +5,13 @@ import { EscenaSupuesto, LateralPosition, RCP, EndGame } from '../consts/SceneKe
 
 
 export default class CallGame extends Phaser.Scene
-{ 
+{
     init(data)
     {
         this.message = data.msg;
         this.breathe = data.breathe;
         this.reply = data.reply;
+        this.place = data.place;
         this.supuestoScene = data.escenaSupuesto;
     }
 
@@ -48,13 +49,13 @@ export default class CallGame extends Phaser.Scene
                 inputText.text = '';
             })
             .on('blur', function (inputText) {
-                text = inputText.text;
+                text = inputText.text.trim();
             })
             .on('click', function (inputText) {
                 inputText.text = '';
             })
-        
-        var button = this.add.dom(divWidth/2, (divHeight/2.2)+40, 'button', 'width: ' + divWidth/7 + 'px; height: ' + divHeight/21 + 'px; font: ' + (divHeight/41) + 'px Arial', 'Aceptar')
+            var textPlace = String(this.place).toUpperCase();
+            var button = this.add.dom(divWidth/2, (divHeight/2.2)+40, 'button', 'width: ' + divWidth/7 + 'px; height: ' + divHeight/21 + 'px; font: ' + (divHeight/41) + 'px Arial', 'Aceptar')
             .on('click', function () {  
                 // Have they entered anything?
                 if (text !== '')
@@ -71,12 +72,10 @@ export default class CallGame extends Phaser.Scene
     
                     // Show questions
                     question.setText('112: ¿' + text + ', donde se encuentra?');
-                    trueAnswer.setText('1- PARQUE DEL EBRO (Correcta)');
+                    trueAnswer.setText('1- ' + textPlace);
                     falseAnswer1.setText('2- N-111 PASADO ISLALLANA, AL LADO DEL PUENTE DE VIGUERA');
                     falseAnswer2.setText('3- A12 HACIA SANTO DOMINGO, PASADO HERVÍAS');
-                }
-                else
-                {
+                }else{
                     // Flash the prompt
                     this.scene.tweens.add({
                         targets: text,
