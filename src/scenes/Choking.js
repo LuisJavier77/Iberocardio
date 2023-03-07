@@ -72,7 +72,7 @@ export default class Choking extends Phaser.Scene
         this.input.off('pointerup', this.stopDrag, this);
         if(targets[0] != undefined)
         {
-            if(pointer.y > 710 && pointer.y < 760)
+            if(pointer.y > 690 && pointer.y < 740)
             {
                 targets[0].fillColor = 0x00ff00;
                 var resultLabel = this.add.text(960, 910, '¡Enhorabuena! Has finalizado el minijuego', { color: 'white', fontSize: '40px'}).setOrigin(0.5, 0.5);
