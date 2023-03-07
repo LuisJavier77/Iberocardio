@@ -1,7 +1,6 @@
 import Phaser from 'phaser'
 
-import { cardGame, DealCards, EscenaSupuesto } from '../consts/SceneKeys'
-import Supuesto from '../helpers/supuestos';
+import { cardGame, Config, EscenaSupuesto } from '../consts/SceneKeys'
 
 //import imgIberocardio from 'src/assets/images/iberocardio-logo.png';
 
@@ -13,6 +12,7 @@ export default class TitleScreen extends Phaser.Scene
         this.load.image('iberocardio', 'src/assets/images/iberocardio-logo.png');
         this.load.image('panoimagen', 'src/assets/images/panoimagen-logo.svg');
         this.load.image('start', 'src/assets/images/start.png');
+        this.load.image('config', 'src/assets/images/config.png');
     }
 
     create()
@@ -24,6 +24,7 @@ export default class TitleScreen extends Phaser.Scene
         div.style.width = canvas.style.width
         div.style.height = canvas.style.height
         
+        var configButton = this.add.image(1800, 100, 'config').setInteractive({ useHandCursor: true });
         const title1 = this.add.text(960, 300, 'JUEGO', {
             fontSize: 100
         })
@@ -47,6 +48,10 @@ export default class TitleScreen extends Phaser.Scene
             //this.scene.start(DealCards); 
             this.scene.start(EscenaSupuesto);     
         }, this);
+
+        configButton.on('pointerdown', function (){
+            this.scene.start(Config);
+        }, this)
         /*this.input.keyboard.once('keydown-SPACE', () => {
             this.scene.start(DealCards);
         })*/

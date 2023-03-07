@@ -1,6 +1,7 @@
 import Phaser from 'phaser'
 
-import { EndGame } from '../consts/SceneKeys'
+import { EndGame, EscenaSupuesto } from '../consts/SceneKeys'
+import Supuesto from '../helpers/supuestos';
 
 
 
@@ -42,10 +43,10 @@ export default class DEA extends Phaser.Scene
     { 
         patch1_OK = false;
         patch2_OK = false;
-        if(!this.supuestoScene.deaModalDisplayed){
+        /*if(!this.supuestoScene.deaModalDisplayed){
             this.showModal();
-        } 
-        this.supuestoScene.deaModalDisplayed = true;     
+        } */
+        //this.supuestoScene.deaModalDisplayed = true;     
         counter = 0;
         this.add.text(960, 100, 'DEA', { color: 'white', fontSize: '100px'}).setOrigin(0.5, 0.5);
         var helpButton = this.add.image(1800, 100, 'help').setScale(0.2);
@@ -86,9 +87,14 @@ export default class DEA extends Phaser.Scene
 
         this.continueButton = this.add.image(960, 950, 'continue').setOrigin(0.5, 0.5).setScale(0.5).setInteractive({ useHandCursor: true });
         this.continueButton.on('pointerdown', function () {
-            this.supuestoScene.scene.setVisible(true);
-            this.supuestoScene.scene.wake();
-            this.scene.stop();
+            //this.supuestoScene.scene.setVisible(true);
+            //this.supuestoScene.scene.wake();
+            //this.scene.stop();           
+            this.scene.switch(EscenaSupuesto);
+            yellowLight.setIntensity(0);
+            this.continueButton.setVisible(false);
+            counter = 0;
+            this.messageShocking();
         }, this);
         this.continueButton.setVisible(false);
 
@@ -159,6 +165,7 @@ export default class DEA extends Phaser.Scene
             {                        
                 yellowLight.setIntensity(100);
                 resultLabel.setText('Descarga realizada');
+                //counter = 0;
                 this.continueButton.setVisible(true);
                 //this.rcpQuestion();         
             }
@@ -210,11 +217,10 @@ export default class DEA extends Phaser.Scene
                 }
                 else {
                     resultLabel.setText('(audio) NO Recomiendo descarga. Comience RCP');
-                    shock = false;
+                    shock = false;                  
                     this.continueButton.setVisible(true);
-                    //this.rcpQuestion();
-                }               
-            }, 3000);          
+                }              
+            }, 3000);             
             counter++;
         }
     }

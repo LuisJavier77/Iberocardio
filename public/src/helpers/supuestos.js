@@ -16,7 +16,11 @@ export default class Supuesto {
         this.place = this.placeOptions[~~(Math.random()*3)];
         this.victim = new Victim().setVictim();
         this.basics = basics;
-        this.danger =  new Danger().setDanger();
+        if(this.basics.reply && !this.basics.breath){
+            this.danger = "No hay peligro en la zona";
+        }else{
+            this.danger =  new Danger().setDanger();
+        }
         this.localInfo = new LocalInfo();
     }
 

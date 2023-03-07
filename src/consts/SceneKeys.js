@@ -1,4 +1,5 @@
 const TitleScreen = 'titlescreen'
+const Config = 'config'
 const DealCards = 'dealcards'
 const Scenes = 'scenes'
 const CallGame = 'callgame'
@@ -13,6 +14,7 @@ const EscenaSupuesto = 'EscenaSupuesto'
 
 export {
     TitleScreen,
+    Config,
     DealCards,
     Scenes,
     cardGame,

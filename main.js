@@ -2,6 +2,7 @@ import './style.css'
 
 import Phaser from "phaser"
 import TitleScreen from './src/scenes/TitleScreen'
+import Config from './src/scenes/Config'
 import cardGame from './src/scenes/cardGame'
 import DealCards from './src/scenes/DealCards'
 import Scenes from './src/scenes/Scenes'
@@ -17,7 +18,9 @@ import InputTextPlugin from 'phaser3-rex-plugins/plugins/inputtext-plugin.js';
 
 import * as SceneKeys from './src/consts/SceneKeys'
 
-const config = {
+var config = {
+  numCardsOp: 3,
+  protocolOp: 'ERC',
   type: Phaser.AUTO,
   scale: {
     mode: Phaser.Scale.NONE,
@@ -47,6 +50,7 @@ const config = {
 const game = new Phaser.Game(config)
 
 game.scene.add(SceneKeys.TitleScreen, TitleScreen)
+game.scene.add(SceneKeys.Config, Config)
 game.scene.add(SceneKeys.cardGame, cardGame)
 game.scene.add(SceneKeys.DealCards, DealCards)
 game.scene.add(SceneKeys.Scenes, Scenes)

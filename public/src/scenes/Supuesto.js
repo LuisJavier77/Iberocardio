@@ -21,14 +21,13 @@ export default class EscenaSupuesto extends Phaser.Scene
         'Maniobra frente menton',
         'Respira 1',
         'Respira 2',
-        'SOS',
         'Llamar al 112',
         'Posición lateral de seguridad',
         'RCP',
         'Observar paciente',
+        'Dar palmadas en la espalda',
         'Maniobra de Heimlich',
-        'Animar a toser',
-        'Dar palmadas en la espalda'
+        'Animar a toser'
     ]
 
     currentCards = [
@@ -43,7 +42,6 @@ export default class EscenaSupuesto extends Phaser.Scene
     textCards = [];
     cardNamesImages = [];
 
-    response1Flag = false;
     frenteMentonFlag = false;
     endCheckResponse = false;
     breatheCheckFlag = false;
@@ -63,7 +61,16 @@ export default class EscenaSupuesto extends Phaser.Scene
     iconBreath;
     iconDanger;
 
-    engame = false;
+    cardEntorno;
+    cardCalma;
+    cardEpi;
+    cardResponde1;
+    cardResponde2;
+    cardFrenteMenton;
+    cardRespira1;
+    cardRespira2;
+    sosPlayed = false;
+
 
     preload()
     {
@@ -71,8 +78,6 @@ export default class EscenaSupuesto extends Phaser.Scene
         this.load.image('carta', 'src/assets/images/carta.png');
         this.load.image('end', 'src/assets/images/start.png');
         this.load.image("background", 'src/assets/images/modalBackground.png');
-        this.load.image("victimInterface", 'src/assets/images/victimInterface.png');
-        this.load.image("dangerInterface", 'src/assets/images/dangerInterface.png');
         this.load.image("placeInterface", 'src/assets/images/placeInterface.png');
         this.load.image("breath", 'src/assets/images/greenBreath.png');
         this.load.image("noBreath", 'src/assets/images/redBreath.png');
@@ -82,6 +87,7 @@ export default class EscenaSupuesto extends Phaser.Scene
         this.load.image("danger", 'src/assets/images/danger.png');
         this.load.image("warning", 'src/assets/images/warning.png');
         this.load.image("safe", 'src/assets/images/safe.png');
+        this.load.image("sos", 'src/assets/images/sos.png');
 
 
         // Cargar supuesto
@@ -94,16 +100,14 @@ export default class EscenaSupuesto extends Phaser.Scene
     create()
     {
         console.log(this.supuesto);
-        console.log(this.supuesto.placeOptions)
         // Imagen del Supuesto
         var image = this.add.image(0, 0, 'escenario').setOrigin(0);
-        this.add.image(1570, 250, 'dangerInterface').setOrigin(0, 0.5);
-        this.add.image(1570, 620, "victimInterface").setOrigin(0, 0.5);
         this.add.image(960, 131, "placeInterface").setOrigin(0.5, 0);
         this.add.text(960, 140, "LUGAR: " + this.supuesto.place, {color: 'black', fontSize: 30}).setOrigin(0.5, 0);
-        this.iconBreath = this.add.image(1720, 550, "unknown").setScale(0.7);
-        this.iconResponse = this.add.image(1720, 770, "unknown").setScale(0.7);
-        this.iconDanger = this.add.image(1720, 270, "unknown").setScale(0.5);
+        this.iconDanger = this.add.image(1600, 170, "unknown").setScale(0.4);
+        this.iconBreath = this.add.image(1700, 170, "unknown").setScale(0.4);
+        this.iconResponse = this.add.image(1800, 170, "unknown").setScale(0.4);
+        this.sosButton = this.add.image(80, 850, "sos").setScale(0.2).setInteractive({ useHandCursor: true });
 
         image.displayWidth = this.sys.canvas.width;
         image.displayHeight = this.sys.canvas.height;
@@ -120,13 +124,15 @@ export default class EscenaSupuesto extends Phaser.Scene
         this.textCards.push(textCard2);
 
         this.drawCards(this.textCards);
+
+        this.sosButton.on('pointerdown', function () {
+            this.sosCard();
+        }, this);
     }
 
     checkOrder(card){
         switch (this.basics.getState()) {
             case "protect":
-                //console.log(this.basics.getProtect())
-                //console.log(card)
                 if((this.basics.getProtect()).includes(card)){
                     switch(card){
                         case 'Entorno':
@@ -145,19 +151,19 @@ export default class EscenaSupuesto extends Phaser.Scene
                             }
 
                             // Establecer que se ha jugado la carta Entorno y la cambiamos por otra
-                            this.entorno = true;
+                            this.cardEntorno = true;
                             this.changeCard("Entorno");
                             break;
                         case 'Calma':
                             // Mostrar mensaje de que se ha jugado la carta Calma, establecer que se ha jugado la carta y cambiarla por otra
                             this.dialogText.setText("MUY BIEN. SIEMPRE HAY QUE MANTENER LA CALMA EN CUALQUIER EMERGENCIA."); 
-                            this.calma = true;
+                            this.cardCalma = true;
                             this.changeCard("Calma");
                             break;
                         case 'EPI':
                             // Mostrar mensaje de que se ha jugado la carta EPI, establecer que se ha jugado la carta y cambiarla por otra
                             this.dialogText.setText("MUY BIEN. HAY QUE PROTEGERSE A SI MISMO SIEMPRE QUE SEA POSIBLE.");
-                            this.epi = true;
+                            this.cardEpi = true;
                             this.changeCard("EPI");
                             break;
                     }                                     
@@ -168,9 +174,9 @@ export default class EscenaSupuesto extends Phaser.Scene
                 }
 
                 // Si se han jugado las 3 cartas de autoprotección se pasa a la fase Danger
-                if(this.entorno && this.calma && this.epi){
+                if(this.cardEntorno && this.cardCalma && this.cardEpi){
                     this.basics.setState("danger");
-                    console.log("FASE DANGER");
+                    //console.log("FASE DANGER");
                 }
                 break;
             
@@ -244,7 +250,11 @@ export default class EscenaSupuesto extends Phaser.Scene
                 if(card === "Responde 1"){
                     this.dialogText.setText("ANTES DEBERÍAS OBSERVAR A LA VÍCTIMA.");
                     this.cameras.main.shake(300);
-                }         
+                } 
+                if(card === "Dar palmadas en la espalda"){
+                    this.dialogText.setText("NUNCA ES RECOMENDABLE DAR PALMADAS EN LA ESPALDA.");
+                    this.cameras.main.shake(300);
+                }                       
                 break;
             
             case 'check':
@@ -259,7 +269,7 @@ export default class EscenaSupuesto extends Phaser.Scene
                 if(this.currentCards.includes("Neutralizar el peligro")){
                     this.changeCard("Neutralizar el peligro");
                 }
-                console.log("FASE CHECK")
+                //console.log("FASE CHECK")
 
                 // Si se juega la carta 'Responde 1' se comprueba si la víctima responde o no para mostrar el mensaje correspondiente. Se establece que se ha jugado la carta
                 // y se cambia por otra
@@ -271,21 +281,21 @@ export default class EscenaSupuesto extends Phaser.Scene
                             this.iconBreath.setTexture('breath');
                             this.iconResponse.setTexture('response');
                             this.basics.setState("call");
-                            this.indice += 3; 
-                            this.changeCard("Responde 1");                         
-                        }              
+                            this.indice += 2;
+                            this.changeCard("Responde 1");
+                        }             
                         this.endCheckResponse = true;
                     }else{
                         this.dialogText.setText("LA VÍCTIMA NO RESPONDE CUANDO LE HABLAMOS.");
                         this.iconResponse.setTexture('noResponse');
                         this.changeCard("Responde 1");
                     }
-                    this.response1Flag = true;
+                    this.cardResponde1 = true;
                 }
                 // Si se juega la carta 'Responde 2' se comprueba si se ha jugado la carta 'Responde 1' y si la víctima no responde hay un 10% de que responda,
                 // y se cambia por otra
                 if(card === "Responde 2"){
-                    if(this.response1Flag){
+                    if(this.cardResponde1){
                         if(!this.basics.getReply()){
                             if(this.basics.getChance()>90){
                                 this.basics.setReply(true);
@@ -309,7 +319,7 @@ export default class EscenaSupuesto extends Phaser.Scene
                                     }else{
                                         this.dialogText.setText("LA VÍCTIMA ESTÁ TOSIENDO.");
                                         this.iconBreath.setTexture('breath');
-                                    this.iconResponse.setTexture('response');
+                                        this.iconResponse.setTexture('response');
                                         this.isChocking = false;
                                     }
                                 }else{
@@ -324,6 +334,7 @@ export default class EscenaSupuesto extends Phaser.Scene
                             this.dialogText.setText("NO ES NECESARIO. LA VÍCTIMA YA RESPONDE.");
                             this.cameras.main.shake(300);                            
                         }
+                        this.cardResponde2=true;
                         this.changeCard("Responde 2");
                     }else{
                         this.dialogText.setText("ANTES DE GOLPEAR LOS HOMBROS SERÍA INTERESANTE PREGUNTAR.");
@@ -338,10 +349,11 @@ export default class EscenaSupuesto extends Phaser.Scene
                     if(this.basics.getReply() && this.basics.getBreathe() && this.currentCards.includes("Responde 2")){
                         this.dialogText.setText("NO ES NECESARIO. YA SABEMOS QUE PUEDE RESPIRAR.");
                         this.cameras.main.shake(300);
+                        this.cardFrenteMenton = true;
                         this.changeCard("Maniobra frente menton");
                     }else{ 
                         if(this.endCheckResponse){                
-                            this.frenteMentonFlag = true;
+                            this.cardFrenteMenton = true;
                             this.changeCard("Maniobra frente menton");
                             this.dialogText.setText("CORRECTO. HAY QUE ABRIR LAS VÍAS RESPIRATORIAS.");
                         }else{
@@ -355,7 +367,7 @@ export default class EscenaSupuesto extends Phaser.Scene
                 if(card === "Respira 1" || card === "Respira 2"){
                     if(this.endCheckResponse){  
                         this.changeCard("Responde 2");                     
-                        if(this.frenteMentonFlag){
+                        if(this.cardFrenteMenton){
                             if(this.breatheCheckFlag){
                                 if(!this.basics.getBreathe()){
                                     if(this.basics.getChance()>90){
@@ -363,6 +375,7 @@ export default class EscenaSupuesto extends Phaser.Scene
                                         this.iconBreath.setTexture('breath');                               
                                         if(card === "Respira 1"){
                                             this.dialogText.setText("NOTAS QUE LA VÍCTIMA RESPIRA.");
+                                            this.cardRespira1 = true;
                                         }else{
                                             this.dialogText.setText("TOCAS EL ABDOMEN Y NOTAS QUE RESPIRA.");
                                         }
@@ -370,7 +383,8 @@ export default class EscenaSupuesto extends Phaser.Scene
                                         this.iconBreath.setTexture('breath');                                     
                                     }else{
                                         if(card === "Respira 1"){
-                                            this.dialogText.setText("PARECE SER QUE LA VÍCTIMA NO RESPIRA.");                                           
+                                            this.dialogText.setText("PARECE SER QUE LA VÍCTIMA NO RESPIRA.");
+                                            this.cardRespira1 = true;                                          
                                         }else{
                                             this.dialogText.setText("TOCAMOS EL ABDOMEN DE LA VÍCTIMA Y NO NOTAS QUE RESPIRE.");
                                         }
@@ -387,6 +401,7 @@ export default class EscenaSupuesto extends Phaser.Scene
                                     this.dialogText.setText("LA VÍCTIMA RESPIRA.");                               
                                     // Quitamos las cartas de Respira
                                     if(this.currentCards.includes("Respira 1")){
+                                        this.cardRespira1 = true;
                                         this.changeCard("Respira 1");
                                     }
                                     if(this.currentCards.includes("Respira 2")){
@@ -395,6 +410,12 @@ export default class EscenaSupuesto extends Phaser.Scene
                                     this.basics.setState("call");
                                 }else{
                                     this.iconBreath.setTexture('noBreath');
+                                    if(card === "Respira 1"){
+                                        this.cardRespira1 = true;
+                                    }else{
+                                        this.cardRespira2 = true;
+                                    }
+                                    
                                     this.dialogText.setText("LA VÍCTIMA NO RESPIRA.");
                                 }
                             }
@@ -412,13 +433,15 @@ export default class EscenaSupuesto extends Phaser.Scene
                 if(card === "Llamar al 112"){
                     this.dialogText.setText("DEBERÍAS TERMINAR DE EXAMINAR A LA VÍCTIMA ANTES DE LLAMAR.");
                     this.cameras.main.shake(300);
-                }
+                } 
                 break;
 
             case 'call':
                 console.log("FASE CALL");
                 if(!this.currentCards.includes("Llamar al 112")){
+                    console.log("CAMBIO CARTA Llamar 112")
                     this.currentCards[0] = "Llamar al 112";
+                    this.drawCards();
                 }
                 if(card === "Llamar al 112"){
                     // Ocultar la escena de los supuestos y la escena de las cartas y lanzar la escena del minijuego de la llamada
@@ -466,8 +489,9 @@ export default class EscenaSupuesto extends Phaser.Scene
                 if(card === "RCP"){
                     if(!this.basics.getReply() && !this.basics.getBreathe()){
                         this.scene.setVisible(false);
-                        this.scene.sleep();                    
-                        this.scene.launch(DEA, {cardScene: this});
+                        this.scene.sleep();
+                        //this.scene.launch(DEA, {cardScene: this});
+                        this.scene.switch(DEA, {cardScene: this});
                         this.checkAmbulance();
                     }else{
                         this.dialogText.setText("NO ES LA ACTUACIÓN CORRECTA.");
@@ -488,6 +512,7 @@ export default class EscenaSupuesto extends Phaser.Scene
                 break;
             
             case 'choking':
+                console.log("FASE CHOKING")
                 var chance = this.basics.getChance();
                 switch(this.turnChoking){
                     case 1:
@@ -498,13 +523,13 @@ export default class EscenaSupuesto extends Phaser.Scene
                             }else{
                                 if(chance<=5){
                                     this.dialogText.setText("LA VÍCTIMA HA CONSEGUIDO EXPULSAR EL OBJETO TOSIENDO. FIN DEL JUEGO.");
-                                    var blockBackground = this.add.image(960, 540, 'background').setDepth(3).setInteractive();
+                                    var blockBackground = this.add.image(960, 540, 'background').setDepth(2).setInteractive();
                                     blockBackground.setOrigin(0.5, 0.5);
                                     blockBackground.setDisplaySize(this.sys.canvas.width, this.sys.canvas.height);
                                     blockBackground.setAlpha(0.6);
-                                    var endButton = this.add.image(960, 660, 'end').setOrigin(0.5, 0.5).setScale(0.4).setInteractive({ useHandCursor: true });
+                                    var endButton = this.add.image(960, 660, 'end').setOrigin(0.5, 0.5).setDepth(3).setScale(0.4).setInteractive({ useHandCursor: true });
                                     endButton.on('pointerdown', function () {
-                                        this.scene.start(EndGame);     
+                                        this.scene.start(EndGame);    
                                     }, this);
                                 }else if(chance<=30){
                                     this.dialogText.setText("LA VÍCTIMA SIGUE TOSIENDO.");
@@ -549,6 +574,14 @@ export default class EscenaSupuesto extends Phaser.Scene
                                 ];
                                 this.drawCards();
                             }
+                        } 
+                        if(card === "Dar palmadas en la espalda"){
+                            if(localStorage.getItem('protocolOp') == "ERC"){
+                                this.dialogText.setText("DAS 5 GOLPES EN LA ESPALDA DE LA VÍCTIMA.");
+                            }else{
+                                this.dialogText.setText("NO ES RECOMENDABLE DAR PALMADAS EN LA ESPALDA.");
+                                this.cameras.main.shake(300);
+                            }                         
                         }                       
                         break;
                     
@@ -557,8 +590,7 @@ export default class EscenaSupuesto extends Phaser.Scene
                             if(this.isChocking){
                                 this.dialogText.setText("LA VÍCTIMA NO PUEDE TOSER Y SE ESTÁ AHOGANDO.");
                                 this.cameras.main.shake(300);
-                            }
-                            else{
+                            }else{
                                 if(chance<=5){
                                     this.dialogText.setText("LA VÍCTIMA HA CONSEGUIDO EXPULSAR EL OBJETO TOSIENDO. FIN DEL JUEGO.");
                                     var blockBackground = this.add.image(960, 540, 'background').setDepth(2).setInteractive();
@@ -590,7 +622,6 @@ export default class EscenaSupuesto extends Phaser.Scene
                                 endButton.on('pointerdown', function () {
                                     this.scene.start(EndGame);     
                                 }, this);
-
                             }else{
                                 this.dialogText.setText("NO HA EXPULSADO EL OBJETO. LA VÍCTIMA DEJA DE RESPONDER Y CAE AL SUELO.");
                                 this.basics.setReply(false);
@@ -604,7 +635,15 @@ export default class EscenaSupuesto extends Phaser.Scene
                                 this.drawCards();
                             }
                         }
-                        break;                   
+                        if(card === "Dar palmadas en la espalda"){
+                            if(localStorage.getItem('protocolOp') == "ERC"){
+                                this.dialogText.setText("DAS 5 GOLPES EN LA ESPALDA DE LA VÍCTIMA.");
+                            }else{
+                                this.dialogText.setText("NO ES RECOMENDABLE DAR PALMADAS EN LA ESPALDA.");
+                                this.cameras.main.shake(300);
+                            }
+                        }
+                        break;         
                 }
                 break;
         }
@@ -625,34 +664,42 @@ export default class EscenaSupuesto extends Phaser.Scene
         this.cardImage2 = this.add.image(960, 990, 'carta').setScale(1.3, 0.7).setInteractive({ useHandCursor: true });
         this.cardImage3 = this.add.image(1720, 990, 'carta').setScale(1.3, 0.7).setInteractive({ useHandCursor: true });
 
-        this.cardImage1.on('pointerdown', function () {
+        this.cardImage1.on('pointerdown', function () {            
             this.checkOrder(this.currentCards[0]);
+            this.cardImage1.tint= 0xCCCCCC;
+            setTimeout(() => {
+                this.cardImage1.tint= 0xFFFFFF;           
+            }, 150);
         }, this);
         this.cardImage2.on('pointerdown', function () {
             this.checkOrder(this.currentCards[1]);
+            this.cardImage2.tint= 0xCCCCCC;
+            setTimeout(() => {
+                this.cardImage2.tint= 0xFFFFFF;           
+            }, 150);
         }, this);
         this.cardImage3.on('pointerdown', function () {
             this.checkOrder(this.currentCards[2]);
+            this.cardImage3.tint= 0xCCCCCC;
+            setTimeout(() => {
+                this.cardImage3.tint= 0xFFFFFF;          
+            }, 150);
         }, this);
 
         this.textCards[0].setText(this.currentCards[0]).setDepth(1);
         this.textCards[1].setText(this.currentCards[1]).setDepth(1);
-        this.textCards[2].setText(this.currentCards[2]).setDepth(1);       
+        this.textCards[2].setText(this.currentCards[2]).setDepth(1);      
     }
 
     getCallMessage(){
         var message;
         if(this.basics.getReply() && this.basics.getBreathe()){
             message = "Tenemos a una persona que responde y respira, parece que le duele el pecho.";
-        }
-        if(!this.basics.getReply() && this.basics.getBreathe()){
+        }else if(!this.basics.getReply() && this.basics.getBreathe()){
             message = "Tenemos a una persona que no responde a estímulos.\nLe hemos gritado al oído y golpeado los hombros, pero respira normalmente.";
-        }
-        if(!this.basics.getReply() && !this.basics.getBreathe()){
+        }else if(!this.basics.getReply() && !this.basics.getBreathe()){
             message = "Tenemos una persona que no responde y no respira.";
-
-        }
-        if(this.basics.getReply() && !this.basics.getBreathe()){
+        }else if(this.basics.getReply() && !this.basics.getBreathe()){
             message = "Tenemos una persona que responde pero no respira.";
         }
         return message;
@@ -720,7 +767,7 @@ export default class EscenaSupuesto extends Phaser.Scene
                     this.iconBreath.setTexture('breath');
                     this.iconResponse.setTexture('response');
                 }else{
-                    if(!this.basics.getReply() && !this.basics.getBreathe()){                   
+                    if(!this.basics.getReply() && !this.basics.getBreathe()){                  
                         this.dialogText.setText("LA VÍCTIMA SIGUE SIN RESPONDER NI RESPIRAR.");
                     }else if(this.basics.getReply() || this.basics.getBreathe()){
                         this.dialogText.setText("¡CUIDADO! LA VÍCTIMA HA DEJADO DE RESPONDER Y RESPIRAR.");
@@ -728,7 +775,7 @@ export default class EscenaSupuesto extends Phaser.Scene
                     this.basics.setReply(false);
                     this.basics.setBreathe(false);
                     this.iconBreath.setTexture('noBreath');
-                    this.iconResponse.setTexture('noResponse');                 
+                    this.iconResponse.setTexture('noResponse');                
                 }
                 this.turnAmbulance++;
                 break;
@@ -739,14 +786,83 @@ export default class EscenaSupuesto extends Phaser.Scene
                 blockBackground.setOrigin(0.5, 0.5);
                 blockBackground.setDisplaySize(this.sys.canvas.width, this.sys.canvas.height);
                 blockBackground.setAlpha(0.1);
-                var endButton = this.add.image(960, 660, 'start').setOrigin(0.5, 0.5).setDepth(3).setScale(0.4).setInteractive({ useHandCursor: true });
+                var endButton = this.add.image(960, 660, 'start').setOrigin(0.5, 0.5).setScale(0.4).setInteractive({ useHandCursor: true });
+                endButton.setDepth(3);
                 endButton.on('pointerdown', function () {
                     console.log("BOTON FINAL")
-                    this.scene.start(EndGame);     
+                    this.scene.start(EndGame);    
                 }, this);             
 
                 this.cardImage1.setInteractive(false);
                 break;
         }
+    }
+
+    sosCard(){
+        //console.log("CARTA SOS")
+        // Ver en que estado estamos y que cartas se han jugado. Desabilitar botón después de jugarlo
+        if(!this.sosPlayed){
+            switch(this.basics.getState()){
+                case "protect":
+                    if(!this.cardEntorno){
+                        this.dialogText.setText("JUEGA LA CARTA DE ENTORNO");
+                    }else if(!this.cardCalma){
+                        this.dialogText.setText("JUEGA LA CARTA DE CALMA");
+                    }else{
+                        this.dialogText.setText("JUEGA LA CARTA DE EPI");
+                    }
+                    break;
+                
+                case "danger":
+                    if(this.supuesto.getDanger() === "No hay peligro en la zona"){
+                        this.dialogText.setText("JUEGA LA CARTA OBSERVAR");
+                    }else if(this.supuesto.danger === "Neutralizable"){
+                        this.dialogText.setText("JUEGA LA CARTA NEUTRALIZAR PELIGRO");
+                    }else{
+                        this.dialogText.setText("JUEGA LA CARTA HUIR A ZONA SEGURA");
+                    }
+                    break;
+                
+                case "check":
+                    if(!this.cardResponde1){
+                        this.dialogText.setText("JUEGA LA CARTA RESPONDE 1");
+                    }else if(!this.cardResponde2){
+                        this.dialogText.setText("JUEGA LA CARTA RESPONDE 2");
+                    }else if(this.endCheckResponse && !this.cardFrenteMenton){
+                        this.dialogText.setText("JUEGA LA CARTA FRENTE MENTÓN");
+                    }else if(this.cardFrenteMenton && !this.cardRespira1){
+                        this.dialogText.setText("JUEGA LA CARTA RESPIRA 1");
+                    }else if(this.cardFrenteMenton && this.cardRespira1){
+                        this.dialogText.setText("JUEGA LA CARTA RESPIRA 2");
+                    }
+                    break;
+                
+                case 'call':
+                    this.dialogText.setText("JUEGA LA CARTA LLAMAR AL 112");
+                    break;
+                
+                case 'minigames':
+                    if(this.basics.getReply() && this.basics.getBreathe()){
+                        this.dialogText.setText("JUEGA LA CARTA OBSERVAR AL PACIENTE");
+                    } else if(!this.basics.getReply() && !this.basics.getBreathe()){
+                        this.dialogText.setText("JUEGA LA CARTA RCP");
+                    }else if(!this.basics.getReply() && this.basics.getBreathe()){
+                        this.dialogText.setText("JUEGA LA CARTA POSICIÓN LATERAL DE SEGURIDAD");
+                    }
+                    break;
+                
+                case 'choking':
+                    if(!this.isChocking){
+                        this.dialogText.setText("JUEGA LA CARTA ANIMAR A TOSER");
+                    }else{
+                        this.dialogText.setText("JUEGA LA CARTA MANIOBRA DE HEIMLICH");
+                    }
+                    break;
+            }
+        }else{
+            this.dialogText.setText("SOLO PUEDES PEDIR AYUDA UNA VEZ.");
+        }
+        this.sosPlayed = true;
+        this.sosButton.setAlpha(0.5)
     }
 }
